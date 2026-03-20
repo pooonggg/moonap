@@ -116,7 +116,6 @@
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="scene" id="s1" style="background:linear-gradient(170deg,#060B14,#0A0E1A);">
     <div id="s1-content" style="text-align:center;">
-      <div style="font-size:28px;opacity:.35;margin-bottom:20px;color:#90CAF9;">📱</div>
       <div style="font-size:140px;font-weight:900;color:#90CAF9;letter-spacing:6px;animation:clockPulse 2s ease-in-out infinite;" class="txt-shadow">03:47</div>
       <div style="margin-top:36px;font-size:58px;font-weight:700;color:rgba(255,255,255,.85);line-height:1.5;" class="txt-shadow">
         ตี 3 กว่า... ยังนอนไม่หลับ
@@ -151,44 +150,12 @@
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="scene fade-slow" id="s3" style="background:radial-gradient(ellipse at center,#1a1a3e 0%,#0A0E1A 70%);">
     <div style="text-align:center;">
-      <!-- Moonie with glow -->
-      <div id="s3-moonie" style="animation:float 3s ease-in-out infinite;margin-bottom:24px;">
-        <svg viewBox="0 0 120 120" width="220" height="220" style="overflow:visible;">
-          <defs>
-            <radialGradient id="g3m" cx="50%" cy="45%" r="55%">
-              <stop offset="0%" stop-color="rgba(255,217,102,0.7)"/>
-              <stop offset="100%" stop-color="rgba(255,217,102,0)"/>
-            </radialGradient>
-          </defs>
-          <!-- sparkles -->
-          <circle cx="18" cy="22" r="3" fill="#FFD54F" opacity="0.8"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="1.5s" repeatCount="indefinite"/></circle>
-          <circle cx="102" cy="18" r="2.5" fill="#FFD54F" opacity="0.6"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite"/></circle>
-          <circle cx="14" cy="95" r="2" fill="#FFD54F" opacity="0.7"><animate attributeName="opacity" values="0.7;0.15;0.7" dur="1.8s" repeatCount="indefinite"/></circle>
-          <circle cx="106" cy="90" r="2.5" fill="#FFD54F" opacity="0.5"><animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.2s" repeatCount="indefinite"/></circle>
-          <ellipse cx="60" cy="58" rx="42" ry="38" fill="url(#g3m)"/>
-          <!-- body -->
-          <path d="M58,12 C88,12 106,32 106,58 C106,84 88,104 60,104 C42,104 28,94 28,78 C28,62 44,52 58,52 C72,52 82,60 82,68 C82,76 72,82 60,82" fill="#FFD966" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-          <!-- eyes -->
-          <circle cx="48" cy="58" r="5.5" fill="#2D1B00"/>
-          <circle cx="70" cy="58" r="5.5" fill="#2D1B00"/>
-          <circle cx="49.5" cy="56" r="2.2" fill="white"/>
-          <circle cx="71.5" cy="56" r="2.2" fill="white"/>
-          <!-- star eyes -->
-          <path d="M47,55 L48,53 L49,55 L51,56 L49,57 L48,59 L47,57 L45,56 Z" fill="white" opacity="0.8"/>
-          <path d="M69,55 L70,53 L71,55 L73,56 L71,57 L70,59 L69,57 L67,56 Z" fill="white" opacity="0.8"/>
-          <!-- blush -->
-          <circle cx="38" cy="66" r="5.5" fill="#FFB3BA" opacity="0.5"/>
-          <circle cx="80" cy="66" r="5.5" fill="#FFB3BA" opacity="0.5"/>
-          <!-- smile -->
-          <path d="M50,70 Q59,78 70,70" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
-          <!-- arms -->
-          <ellipse cx="22" cy="66" rx="8" ry="5" fill="#FFD966" transform="rotate(-20 22 66)"/>
-          <ellipse cx="96" cy="66" rx="8" ry="5" fill="#FFD966" transform="rotate(20 96 66)"/>
-        </svg>
-      </div>
-      <!-- Logo -->
-      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <svg width="120" height="120" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+      <!-- Brand Moon Icon + Logo -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <!-- Moon glow halo -->
+        <div style="position:relative;display:inline-block;">
+          <div style="position:absolute;inset:-36px;background:radial-gradient(circle,rgba(245,200,70,0.22) 0%,transparent 70%);border-radius:50%;animation:glowPulse 5s ease-in-out infinite;"></div>
+          <svg width="200" height="200" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;position:relative;z-index:1;animation:float 5s ease-in-out infinite;">
           <defs>
             <radialGradient id="moonGrad1" cx="38%" cy="35%" r="65%">
               <stop offset="0%" stop-color="#FFF4CC"/>
@@ -207,6 +174,7 @@
           <text x="76" y="33" font-size="14" font-family="Playfair Display,serif" fill="#F5C842" font-style="italic" style="animation:floatZ2 3s ease-in-out infinite .4s">z</text>
           <text x="88" y="20" font-size="17" font-family="Playfair Display,serif" fill="#F5C842" font-style="italic" style="animation:floatZ3 3s ease-in-out infinite .8s">z</text>
         </svg>
+        </div><!-- end glow halo -->
         <div style="font-size:96px;font-weight:900;font-family:'Playfair Display',serif;color:#fff;letter-spacing:8px;">
           moo<span style="color:#FFB74D;">nap</span>
         </div>
