@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import PersonaMissionsScreen from './PersonaMissionsScreen.jsx';
 
 // ═══════════════════════════════════════
 // THEMES
@@ -662,7 +663,7 @@ export default function App() {
   const [userName,setUserName]=useState("พลอย");
   const t=TH[theme];
   const now=new Date().toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
-  const tabs=[{id:"home",icon:"🏠",label:"Home"},{id:"dashboard",icon:"📊",label:"Dashboard"},{id:"tools",icon:"🛠",label:"Tools"},{id:"missions",icon:"🎯",label:"Missions"},{id:"profile",icon:"👤",label:"Profile"}];
+  const tabs=[{id:"home",icon:"🏠",label:"Home"},{id:"dashboard",icon:"📊",label:"Dashboard"},{id:"tools",icon:"🛠",label:"Tools"},{id:"missions",icon:"🎯",label:"Missions"},{id:"persona",icon:"👥",label:"Persona"},{id:"profile",icon:"👤",label:"Profile"}];
   const handleTab=id=>{setTab(id);setModal(null);};
   const close=()=>setModal(null);
 
@@ -708,6 +709,7 @@ export default function App() {
           {tab==="dashboard"&&<DashboardScreen t={t}/>}
           {tab==="tools"&&<ToolsScreen t={t} setModal={setModal}/>}
           {tab==="missions"&&<MissionsScreen t={t} setModal={setModal}/>}
+          {tab==="persona"&&<PersonaMissionsScreen/>}
           {tab==="profile"&&<ProfileScreen t={t} setModal={setModal} petId={petId} petNameStr={petNameStr} petState={petState} petAge={petAge} userName={userName}/>}
           {modal==="aiChat"&&<AIChatScreen t={t} petId={petId} petNameStr={petNameStr} close={close} userName={userName}/>}
           {modal==="log"&&<AIChatScreen t={t} petId={petId} petNameStr={petNameStr} close={close} userName={userName}/>}
