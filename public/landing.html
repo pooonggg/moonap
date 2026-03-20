@@ -520,23 +520,6 @@
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="scene fade-slow" id="s9" style="background:linear-gradient(170deg,#0D1B2A,#1B2838);">
     <div style="text-align:center;">
-      <!-- Moonie waving -->
-      <div style="animation:float 3s ease-in-out infinite;margin-bottom:16px;">
-        <svg viewBox="0 0 120 120" width="180" height="180" style="overflow:visible;">
-          <defs><radialGradient id="g9c" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="rgba(255,217,102,0.5)"/><stop offset="100%" stop-color="rgba(255,217,102,0)"/></radialGradient></defs>
-          <ellipse cx="60" cy="58" rx="42" ry="38" fill="url(#g9c)"/>
-          <path d="M58,12 C88,12 106,32 106,58 C106,84 88,104 60,104 C42,104 28,94 28,78 C28,62 44,52 58,52 C72,52 82,60 82,68 C82,76 72,82 60,82" fill="#FFD966" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-          <circle cx="48" cy="58" r="5.5" fill="#2D1B00"/><circle cx="70" cy="58" r="5.5" fill="#2D1B00"/>
-          <circle cx="49.5" cy="56" r="2.2" fill="white"/><circle cx="71.5" cy="56" r="2.2" fill="white"/>
-          <circle cx="38" cy="66" r="5.5" fill="#FFB3BA" opacity="0.5"/><circle cx="80" cy="66" r="5.5" fill="#FFB3BA" opacity="0.5"/>
-          <path d="M50,70 Q59,78 70,70" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
-          <ellipse cx="22" cy="66" rx="8" ry="5" fill="#FFD966" transform="rotate(-20 22 66)"/>
-          <!-- waving arm -->
-          <ellipse cx="98" cy="52" rx="8" ry="5" fill="#FFD966" transform="rotate(35 98 52)">
-            <animateTransform attributeName="transform" type="rotate" values="25 98 52;45 98 52;25 98 52" dur="0.8s" repeatCount="indefinite" additive="replace"/>
-          </ellipse>
-        </svg>
-      </div>
 
       <!-- Logo -->
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
@@ -578,7 +561,14 @@
         <div style="background:rgba(255,255,255,.1);border-radius:14px;padding:14px 32px;font-size:24px;color:rgba(255,255,255,.75);font-weight:700;border:1px solid rgba(255,255,255,.12);"> App Store</div>
       </div>
 
-      <div style="margin-top:20px;font-size:22px;color:rgba(255,255,255,.25);font-weight:500;">Scan QR Code ที่ Booth</div>
+      <!-- QR CTA -->
+      <div style="margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:14px;">
+        <div style="font-size:26px;color:rgba(255,255,255,.65);font-weight:600;letter-spacing:1px;font-family:'Noto Sans Thai',sans-serif;">แสกนเพื่อโหลดได้ที่นี่</div>
+        <div style="background:#fff;border-radius:24px;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.1);">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fpooonggg.github.io%2Fmoonap%2F&bgcolor=ffffff&color=1C1040&margin=3" width="160" height="160" style="display:block;border-radius:12px;" alt="QR moonap">
+        </div>
+        <div style="font-size:18px;color:rgba(255,255,255,.3);letter-spacing:2px;font-family:'DM Sans',sans-serif;">pooonggg.github.io/moonap</div>
+      </div>
     </div>
 
     <!-- Background stars -->
@@ -599,15 +589,15 @@
 <!-- ═══════════════════════════════════════════════════ -->
 <script>
 const timeline = [
-  { id:"s1", start:0,     end:3000  },  // Hook
-  { id:"s2", start:3000,  end:5000  },  // Problem
-  { id:"s3", start:5000,  end:8000  },  // Brand reveal
-  { id:"s4", start:8000,  end:11000 },  // Meet your pet
-  { id:"s5", start:11000, end:14000 },  // AI Chat
-  { id:"s6", start:14000, end:17000 },  // Dynamic theme + planning
-  { id:"s7", start:17000, end:22000 },  // 3AM moment ⭐
-  { id:"s8", start:22000, end:26000 },  // Features + positioning
-  { id:"s9", start:26000, end:30000 },  // Closing CTA
+  { id:"s1", start:0,     end:3000  },  // Hook           — 3s
+  { id:"s2", start:3000,  end:7000  },  // Problem        — 4s (was 2s)
+  { id:"s3", start:7000,  end:10000 },  // Brand reveal   — 3s
+  { id:"s4", start:10000, end:13000 },  // Meet your pet  — 3s
+  { id:"s5", start:13000, end:16000 },  // AI Chat        — 3s
+  { id:"s6", start:16000, end:19000 },  // Theme+planning — 3s
+  { id:"s7", start:19000, end:22000 },  // 3AM moment ⭐  — 3s (was 5s)
+  { id:"s8", start:22000, end:26000 },  // Features       — 4s
+  { id:"s9", start:26000, end:30000 },  // Closing CTA    — 4s
 ];
 
 const TOTAL = 30000;
