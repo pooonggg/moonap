@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOONAP — แอปดูแลการนอนหลับพร้อมเพื่อนคู่ใจ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700;800;900&family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background:#000;
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh; overflow:hidden;
+    font-family:'Noto Sans Thai','DM Sans',sans-serif;
+  }
+
+  /* ── 16:9 LANDSCAPE CANVAS ── */
+  .promo {
+    width:1920px; height:1080px;
+    position:relative; overflow:hidden;
+    transform-origin:center center;
+    background:#0D1B2A;
+  }
+
+  /* Responsive scaling */
+  @media(max-width:600px)  { .promo { transform:scale(0.18); } }
+  @media(min-width:601px) and (max-width:960px)  { .promo { transform:scale(0.35); } }
+  @media(min-width:961px) and (max-width:1400px) { .promo { transform:scale(0.52); } }
+  @media(min-width:1401px) and (max-width:1920px){ .promo { transform:scale(0.7); } }
+  @media(min-width:1921px) { .promo { transform:scale(0.9); } }
+
+  /* ── SCENES ── */
+  .scene {
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition: opacity 0.8s cubic-bezier(.4,0,.2,1);
+  }
+  .scene.active { opacity:1; }
+  .scene.fade-slow { transition: opacity 1.5s cubic-bezier(.4,0,.2,1); }
+
+  /* ── GLOBAL TEXT ── */
+  .txt-shadow { text-shadow: 0 4px 24px rgba(0,0,0,.7), 0 1px 3px rgba(0,0,0,.5); }
+  .txt-glow-gold { text-shadow: 0 0 40px rgba(255,217,102,.35), 0 4px 20px rgba(0,0,0,.6); }
+  .txt-glow-purple { text-shadow: 0 0 30px rgba(206,147,216,.3); }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeInLeft { from{opacity:0;transform:translateX(-50px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes fadeInRight { from{opacity:0;transform:translateX(50px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes scaleIn { from{opacity:0;transform:scale(.6)} to{opacity:1;transform:scale(1)} }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+  @keyframes twinkle { 0%,100%{opacity:.15} 50%{opacity:.9} }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+  @keyframes candleGlow { 0%,100%{filter:drop-shadow(0 0 12px rgba(255,224,178,.25))} 50%{filter:drop-shadow(0 0 40px rgba(255,224,178,.55))} }
+  @keyframes breathe { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:.8;transform:scale(1.15)} }
+  @keyframes slideUpBadge { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes clockPulse { 0%,100%{opacity:.8} 50%{opacity:1} }
+  @keyframes typeIn { from{width:0;opacity:0} to{width:100%;opacity:1} }
+  @keyframes glowRing { 0%,100%{box-shadow:0 0 0 0 rgba(255,217,102,.4)} 50%{box-shadow:0 0 0 20px rgba(255,217,102,0)} }
+  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+  /* ── STARS (reused) ── */
+  .star { position:absolute; color:#FFD966; animation: twinkle 2.5s ease-in-out infinite; pointer-events:none; }
+
+  /* ── SPLIT LAYOUT ── */
+  .split { display:flex; width:100%; height:100%; }
+  .split-left { flex:0 0 55%; display:flex; align-items:center; justify-content:center; }
+  .split-right { flex:1; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:60px 80px 60px 40px; }
+
+  /* ── PHONE MOCKUP ── */
+  .phone-frame {
+    width:320px; height:640px;
+    background:#1B2838; border-radius:36px;
+    border:3px solid rgba(255,255,255,.12);
+    box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.05);
+    overflow:hidden; position:relative;
+  }
+  .phone-frame.morning { background: linear-gradient(170deg,#FFF8E7,#FFE0B2); }
+  .phone-frame.afternoon { background: linear-gradient(170deg,#E3F2FD,#E8F5E9); }
+  .phone-frame.evening { background: linear-gradient(170deg,#4A148C,#7B1FA2); }
+  .phone-frame.night { background: linear-gradient(170deg,#0D1B2A,#1B2838); }
+
+  /* ── CHAT BUBBLES ── */
+  .chat-b {
+    border-radius:20px; padding:14px 20px; font-size:17px; line-height:1.4;
+    max-width:240px; margin:6px 0;
+  }
+  .chat-b.moonie-b { background:rgba(255,255,255,.15); color:#fff; margin-right:auto; border-radius:6px 20px 20px 20px; }
+  .chat-b.user-b { background:linear-gradient(135deg,#CE93D8,#B39DDB); color:#fff; margin-left:auto; border-radius:20px 20px 6px 20px; }
+  .chat-b.moonie-morning { background:rgba(93,64,55,.08); color:#5D4037; border-radius:6px 20px 20px 20px; }
+  .chat-b.user-morning { background:linear-gradient(135deg,#FF9F43,#FF7675); color:#fff; margin-left:auto; border-radius:20px 20px 6px 20px; }
+
+  /* ── FEATURE BADGES ── */
+  .badge {
+    display:inline-flex; align-items:center; gap:12px;
+    padding:16px 28px; border-radius:16px;
+    font-size:28px; font-weight:700; color:#fff;
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(8px);
+  }
+</style>
+</head>
+<body>
+
+<div class="promo" id="promo">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 1: THE HOOK (0:00 - 3:00) — 3 seconds       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene" id="s1" style="background:linear-gradient(170deg,#060B14,#0A0E1A);">
+    <div id="s1-content" style="text-align:center;">
+      <div style="font-size:28px;opacity:.35;margin-bottom:20px;color:#90CAF9;">📱</div>
+      <div style="font-size:140px;font-weight:900;color:#90CAF9;letter-spacing:6px;animation:clockPulse 2s ease-in-out infinite;" class="txt-shadow">03:47</div>
+      <div style="margin-top:36px;font-size:58px;font-weight:700;color:rgba(255,255,255,.85);line-height:1.5;" class="txt-shadow">
+        ตี 3 กว่า... ยังนอนไม่หลับ
+      </div>
+    </div>
+    <!-- sparse dim stars -->
+    <div class="star" style="top:12%;left:8%;font-size:14px;opacity:.1;">✦</div>
+    <div class="star" style="top:18%;right:12%;font-size:10px;animation-delay:.7s;opacity:.08;">✦</div>
+    <div class="star" style="bottom:22%;left:20%;font-size:12px;animation-delay:1.2s;opacity:.06;">✦</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 2: THE PROBLEM (3:00 - 5:00) — 2 seconds     -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene" id="s2" style="background:linear-gradient(170deg,#0D1020,#141830);">
+    <div style="text-align:center;max-width:1400px;">
+      <div style="font-size:100px;margin-bottom:24px;">😵‍💫</div>
+      <div style="font-size:62px;font-weight:800;color:#fff;line-height:1.5;" class="txt-shadow">
+        คนไทย <span style="color:#FFD966;font-size:72px;" class="txt-glow-gold">19 ล้านคน</span>
+      </div>
+      <div style="font-size:56px;font-weight:700;color:rgba(255,255,255,.85);margin-top:4px;" class="txt-shadow">
+        กำลังนอนไม่หลับ
+      </div>
+      <div style="font-size:34px;color:rgba(255,255,255,.45);margin-top:24px;" class="txt-shadow">
+        วงจรนี้ วนซ้ำทุกคืน
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 3: BRAND REVEAL (5:00 - 8:00) — 3 seconds    -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene fade-slow" id="s3" style="background:radial-gradient(ellipse at center,#1a1a3e 0%,#0A0E1A 70%);">
+    <div style="text-align:center;">
+      <!-- Moonie with glow -->
+      <div id="s3-moonie" style="animation:float 3s ease-in-out infinite;margin-bottom:24px;">
+        <svg viewBox="0 0 120 120" width="220" height="220" style="overflow:visible;">
+          <defs>
+            <radialGradient id="g3m" cx="50%" cy="45%" r="55%">
+              <stop offset="0%" stop-color="rgba(255,217,102,0.7)"/>
+              <stop offset="100%" stop-color="rgba(255,217,102,0)"/>
+            </radialGradient>
+          </defs>
+          <!-- sparkles -->
+          <circle cx="18" cy="22" r="3" fill="#FFD54F" opacity="0.8"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="1.5s" repeatCount="indefinite"/></circle>
+          <circle cx="102" cy="18" r="2.5" fill="#FFD54F" opacity="0.6"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite"/></circle>
+          <circle cx="14" cy="95" r="2" fill="#FFD54F" opacity="0.7"><animate attributeName="opacity" values="0.7;0.15;0.7" dur="1.8s" repeatCount="indefinite"/></circle>
+          <circle cx="106" cy="90" r="2.5" fill="#FFD54F" opacity="0.5"><animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.2s" repeatCount="indefinite"/></circle>
+          <ellipse cx="60" cy="58" rx="42" ry="38" fill="url(#g3m)"/>
+          <!-- body -->
+          <path d="M58,12 C88,12 106,32 106,58 C106,84 88,104 60,104 C42,104 28,94 28,78 C28,62 44,52 58,52 C72,52 82,60 82,68 C82,76 72,82 60,82" fill="#FFD966" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+          <!-- eyes -->
+          <circle cx="48" cy="58" r="5.5" fill="#2D1B00"/>
+          <circle cx="70" cy="58" r="5.5" fill="#2D1B00"/>
+          <circle cx="49.5" cy="56" r="2.2" fill="white"/>
+          <circle cx="71.5" cy="56" r="2.2" fill="white"/>
+          <!-- star eyes -->
+          <path d="M47,55 L48,53 L49,55 L51,56 L49,57 L48,59 L47,57 L45,56 Z" fill="white" opacity="0.8"/>
+          <path d="M69,55 L70,53 L71,55 L73,56 L71,57 L70,59 L69,57 L67,56 Z" fill="white" opacity="0.8"/>
+          <!-- blush -->
+          <circle cx="38" cy="66" r="5.5" fill="#FFB3BA" opacity="0.5"/>
+          <circle cx="80" cy="66" r="5.5" fill="#FFB3BA" opacity="0.5"/>
+          <!-- smile -->
+          <path d="M50,70 Q59,78 70,70" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+          <!-- arms -->
+          <ellipse cx="22" cy="66" rx="8" ry="5" fill="#FFD966" transform="rotate(-20 22 66)"/>
+          <ellipse cx="96" cy="66" rx="8" ry="5" fill="#FFD966" transform="rotate(20 96 66)"/>
+        </svg>
+      </div>
+      <!-- Logo -->
+      <div style="font-size:96px;font-weight:900;font-family:'Playfair Display',serif;color:#fff;letter-spacing:4px;">
+        moo<span style="color:#CE93D8;text-decoration:underline;text-decoration-color:rgba(206,147,216,.5);text-underline-offset:10px;text-decoration-thickness:4px;">nap</span>
+      </div>
+      <div style="font-size:32px;color:rgba(255,255,255,.55);margin-top:12px;font-style:italic;font-family:'DM Sans',sans-serif;letter-spacing:2px;">
+        Rest Tonight. Shine Tomorrow.
+      </div>
+      <div style="margin-top:16px;font-size:28px;color:rgba(255,255,255,.35);">
+        เพื่อนยามดึก ไม่ใช่หมอ
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 4: MEET YOUR PET (8:00 - 11:00) — 3 seconds  -->
+  <!-- Night theme — choose your companion                  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene" id="s4" style="background:linear-gradient(170deg,#0D1B2A,#1B2838);">
+    <div class="split">
+      <div class="split-left" style="padding-left:100px;">
+        <!-- Phone mockup: Pet selection screen -->
+        <div class="phone-frame night" style="padding:24px 20px;">
+          <div style="text-align:center;margin-top:10px;">
+            <div style="font-size:14px;color:rgba(255,255,255,.4);font-weight:600;">moonap</div>
+            <div style="font-size:20px;font-weight:800;color:#fff;margin-top:16px;">เลือกเพื่อนของคุณ</div>
+            <div style="font-size:13px;color:rgba(255,255,255,.4);margin-top:4px;">เพื่อนที่โตไปกับคุณภาพการนอน</div>
+          </div>
+          <!-- 3 pets -->
+          <div style="display:flex;gap:12px;margin-top:24px;justify-content:center;">
+            <!-- Moonie -->
+            <div style="flex:1;background:rgba(255,217,102,.08);border:2px solid #FFD966;border-radius:20px;padding:14px 8px;text-align:center;">
+              <svg viewBox="0 0 120 120" width="70" height="70"><ellipse cx="60" cy="58" rx="30" ry="26" fill="rgba(255,217,102,.2)"/><path d="M58,20 C80,20 94,36 94,56 C94,76 80,90 60,90 C48,90 38,82 38,72 C38,62 48,54 58,54 C68,54 76,58 76,64 C76,70 68,74 60,74" fill="#FFD966"/><circle cx="48" cy="54" r="4" fill="#2D1B00"/><circle cx="66" cy="54" r="4" fill="#2D1B00"/><circle cx="49" cy="52.5" r="1.5" fill="white"/><circle cx="67" cy="52.5" r="1.5" fill="white"/><path d="M50,64 Q57,70 66,64" fill="none" stroke="#5D4037" stroke-width="1.5" stroke-linecap="round"/><circle cx="40" cy="60" r="4" fill="#FFB3BA" opacity=".45"/><circle cx="76" cy="60" r="4" fill="#FFB3BA" opacity=".45"/></svg>
+              <div style="font-size:13px;font-weight:800;color:#FFD966;margin-top:2px;">🌙 Moonie</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">พระจันทร์เสี้ยว</div>
+            </div>
+            <!-- Nappy -->
+            <div style="flex:1;background:rgba(179,229,252,.05);border:1px solid rgba(179,229,252,.2);border-radius:20px;padding:14px 8px;text-align:center;">
+              <svg viewBox="0 0 120 120" width="70" height="70"><circle cx="60" cy="62" r="26" fill="#B3E5FC"/><circle cx="42" cy="58" r="18" fill="#B3E5FC"/><circle cx="78" cy="58" r="18" fill="#B3E5FC"/><circle cx="50" cy="48" r="14" fill="#E1F5FE"/><circle cx="70" cy="48" r="12" fill="#E1F5FE"/><circle cx="48" cy="60" r="4" fill="#37474F"/><circle cx="72" cy="60" r="4" fill="#37474F"/><circle cx="49" cy="58.5" r="1.5" fill="white"/><circle cx="73" cy="58.5" r="1.5" fill="white"/><path d="M52,70 Q60,76 68,70" fill="none" stroke="#37474F" stroke-width="1.5" stroke-linecap="round"/><circle cx="38" cy="66" r="4" fill="#F8BBD0" opacity=".4"/><circle cx="82" cy="66" r="4" fill="#F8BBD0" opacity=".4"/></svg>
+              <div style="font-size:13px;font-weight:800;color:#B3E5FC;margin-top:2px;">☁️ Nappy</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">ก้อนเมฆนุ่มๆ</div>
+            </div>
+            <!-- Dreamy -->
+            <div style="flex:1;background:rgba(206,147,216,.05);border:1px solid rgba(206,147,216,.2);border-radius:20px;padding:14px 8px;text-align:center;">
+              <svg viewBox="0 0 120 120" width="70" height="70"><ellipse cx="60" cy="66" rx="26" ry="22" fill="#CE93D8"/><path d="M36,50 L30,26 L48,44 Z" fill="#CE93D8"/><path d="M36,50 L33,32 L44,46 Z" fill="#F3E5F5"/><path d="M84,50 L90,26 L72,44 Z" fill="#CE93D8"/><path d="M84,50 L87,32 L76,46 Z" fill="#F3E5F5"/><circle cx="48" cy="60" r="4" fill="#4A148C"/><circle cx="72" cy="60" r="4" fill="#4A148C"/><circle cx="49" cy="58.5" r="1.5" fill="white"/><circle cx="73" cy="58.5" r="1.5" fill="white"/><ellipse cx="60" cy="66" rx="2.5" ry="1.5" fill="#4A148C"/><path d="M54,72 Q60,77 66,72" fill="none" stroke="#4A148C" stroke-width="1.5" stroke-linecap="round"/><circle cx="38" cy="68" r="4" fill="#F8BBD0" opacity=".35"/><circle cx="82" cy="68" r="4" fill="#F8BBD0" opacity=".35"/></svg>
+              <div style="font-size:13px;font-weight:800;color:#CE93D8;margin-top:2px;">⭐ Dreamy</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">สุนัขจิ้งจอกแห่งฝัน</div>
+            </div>
+          </div>
+          <!-- Tap indicator on Moonie -->
+          <div style="text-align:center;margin-top:20px;">
+            <div style="display:inline-block;width:44px;height:44px;border-radius:50%;background:rgba(255,217,102,.15);border:2px solid rgba(255,217,102,.4);animation:glowRing 1.5s ease-in-out infinite;"></div>
+          </div>
+          <!-- Stats preview -->
+          <div style="display:flex;gap:16px;margin-top:20px;justify-content:center;">
+            <div style="text-align:center;">
+              <div style="width:48px;height:48px;border-radius:50%;border:3px solid #66BB6A;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">🌱</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;">Growth</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="width:48px;height:48px;border-radius:50%;border:3px solid #EF5350;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">❤️</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;">Health</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="width:48px;height:48px;border-radius:50%;border:3px solid #FFD700;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">😊</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;">Mood</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div style="font-size:56px;font-weight:900;color:#FFD966;line-height:1.3;" class="txt-glow-gold">
+          เลือกเพื่อนคู่ใจ
+        </div>
+        <div style="font-size:34px;font-weight:600;color:rgba(255,255,255,.7);margin-top:16px;line-height:1.5;">
+          สัตว์เลี้ยงดิจิทัลที่<br>โตไปกับคุณภาพการนอน
+        </div>
+        <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;">
+          <span style="background:rgba(102,187,106,.12);border:1px solid rgba(102,187,106,.3);border-radius:12px;padding:10px 20px;font-size:22px;color:#66BB6A;font-weight:700;">🌱 Growth</span>
+          <span style="background:rgba(239,83,80,.1);border:1px solid rgba(239,83,80,.25);border-radius:12px;padding:10px 20px;font-size:22px;color:#EF5350;font-weight:700;">❤️ Health</span>
+          <span style="background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.25);border-radius:12px;padding:10px 20px;font-size:22px;color:#FFD700;font-weight:700;">😊 Mood</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 5: AI CHAT (11:00 - 14:00) — 3 seconds       -->
+  <!-- Morning theme mockup — casual chat interface         -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene" id="s5" style="background:linear-gradient(170deg,#0D1B2A,#1B2838);">
+    <div class="split">
+      <div class="split-left" style="padding-left:100px;">
+        <div class="phone-frame morning" style="padding:20px 16px;">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid rgba(93,64,55,.1);">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#FFD966,#FFB300);display:flex;align-items:center;justify-content:center;font-size:18px;">🌙</div>
+            <div>
+              <div style="font-size:15px;font-weight:800;color:#5D4037;">Moonie</div>
+              <div style="font-size:11px;color:#66BB6A;font-weight:600;">● ออนไลน์</div>
+            </div>
+          </div>
+          <!-- Chat messages -->
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
+            <div class="chat-b moonie-morning">คืนนี้หลับยังไงบ้าง? 😊</div>
+            <div class="chat-b user-morning">ตื่นกลางดึก 2 ครั้ง</div>
+            <div class="chat-b moonie-morning">เข้าใจ! เดี๋ยว Moonie<br>ช่วยวางแผนให้นะ 💪</div>
+          </div>
+          <!-- Summary card -->
+          <div style="margin-top:14px;background:rgba(93,64,55,.06);border-radius:16px;padding:14px;border:1px solid rgba(93,64,55,.1);">
+            <div style="font-size:13px;font-weight:700;color:#5D4037;margin-bottom:8px;">📋 สรุปอัตโนมัติ</div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#5D4037;padding:6px 0;border-bottom:1px solid rgba(93,64,55,.06);">
+              <span style="opacity:.5;">เข้านอน</span><span style="font-weight:700;">02:00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#5D4037;padding:6px 0;">
+              <span style="opacity:.5;">Sleep Efficiency</span><span style="font-weight:700;color:#EF5350;">~69%</span>
+            </div>
+          </div>
+          <!-- Input bar -->
+          <div style="margin-top:14px;display:flex;gap:8px;align-items:center;">
+            <div style="flex:1;background:rgba(93,64,55,.06);border-radius:24px;padding:10px 16px;font-size:13px;color:rgba(93,64,55,.35);border:1px solid rgba(93,64,55,.08);">พิมพ์ข้อความ...</div>
+            <div style="width:36px;height:36px;border-radius:50%;background:#FF9F43;display:flex;align-items:center;justify-content:center;font-size:16px;">🎤</div>
+          </div>
+        </div>
+      </div>
+      <div class="split-right">
+        <div style="font-size:64px;font-weight:900;color:#FFD966;line-height:1.2;" class="txt-glow-gold">
+          แค่คุย
+        </div>
+        <div style="font-size:42px;font-weight:700;color:rgba(255,255,255,.85);margin-top:12px;" class="txt-shadow">
+          AI จับข้อมูลเอง
+        </div>
+        <div style="font-size:32px;color:rgba(255,255,255,.45);margin-top:12px;" class="txt-shadow">
+          ไม่ต้องกรอกฟอร์ม
+        </div>
+        <div style="margin-top:32px;background:rgba(255,255,255,.06);border-radius:16px;padding:20px 28px;border:1px solid rgba(255,255,255,.08);max-width:480px;">
+          <div style="font-size:22px;color:rgba(255,255,255,.5);line-height:1.6;">
+            💬 พิมพ์หรือพูดเหมือนคุยกับเพื่อน<br>
+            🧠 AI วิเคราะห์และสรุปให้อัตโนมัติ
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 6: DYNAMIC THEME + PLANNING (14:00-17:00)     -->
+  <!-- Shows the 4 themes + daily schedule                  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene" id="s6" style="background:linear-gradient(170deg,#0D1B2A,#1B2838);">
+    <div class="split">
+      <div class="split-left" style="padding-left:60px;flex-direction:column;gap:20px;flex-wrap:wrap;align-content:center;">
+        <!-- 4 mini theme previews in a 2x2 grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <!-- Morning -->
+          <div style="width:190px;height:130px;border-radius:20px;background:linear-gradient(170deg,#FFF8E7,#FFE0B2);padding:14px;border:2px solid rgba(255,159,67,.3);position:relative;overflow:hidden;">
+            <div style="font-size:11px;font-weight:800;color:#FF9F43;">🌅 เช้า</div>
+            <div style="font-size:10px;color:#8D6E63;margin-top:4px;">สวัสดีตอนเช้า!</div>
+            <div style="position:absolute;bottom:10px;right:12px;font-size:22px;">☀️</div>
+          </div>
+          <!-- Afternoon -->
+          <div style="width:190px;height:130px;border-radius:20px;background:linear-gradient(170deg,#E3F2FD,#E8F5E9);padding:14px;border:2px solid rgba(30,136,229,.25);position:relative;overflow:hidden;">
+            <div style="font-size:11px;font-weight:800;color:#1E88E5;">☀️ กลางวัน</div>
+            <div style="font-size:10px;color:#455A64;margin-top:4px;">อย่าลืมดูแลตัวเอง</div>
+            <div style="position:absolute;bottom:10px;right:12px;font-size:22px;">🌤️</div>
+          </div>
+          <!-- Evening -->
+          <div style="width:190px;height:130px;border-radius:20px;background:linear-gradient(170deg,#4A148C,#7B1FA2);padding:14px;border:2px solid rgba(206,147,216,.35);position:relative;overflow:hidden;">
+            <div style="font-size:11px;font-weight:800;color:#CE93D8;">🌇 เย็น</div>
+            <div style="font-size:10px;color:#E1BEE7;margin-top:4px;">เตรียม wind-down</div>
+            <div style="position:absolute;bottom:10px;right:12px;font-size:22px;">🌙</div>
+          </div>
+          <!-- Night -->
+          <div style="width:190px;height:130px;border-radius:20px;background:linear-gradient(170deg,#0D1B2A,#1B2838);padding:14px;border:2px solid rgba(144,202,249,.25);position:relative;overflow:hidden;">
+            <div style="font-size:11px;font-weight:800;color:#90CAF9;">🌙 กลางคืน</div>
+            <div style="font-size:10px;color:#78909C;margin-top:4px;">เราอยู่ตรงนี้นะ</div>
+            <div style="position:absolute;bottom:10px;right:12px;font-size:22px;">🕯️</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:18px;color:rgba(255,255,255,.35);font-weight:600;">
+          🎨 เปลี่ยนธีมอัตโนมัติตามเวลาจริง
+        </div>
+      </div>
+      <div class="split-right">
+        <div style="font-size:52px;font-weight:900;color:#fff;line-height:1.3;" class="txt-shadow">
+          วางแผนทั้งวัน
+        </div>
+        <div style="font-size:48px;font-weight:900;color:#FFD966;" class="txt-glow-gold">
+          เฉพาะคุณ
+        </div>
+        <!-- Schedule items -->
+        <div style="margin-top:28px;display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.06);border-radius:16px;padding:18px 24px;border:1px solid rgba(255,255,255,.08);">
+            <span style="font-size:36px;">☕</span>
+            <div>
+              <div style="font-size:26px;font-weight:800;color:#fff;">14:00 — หยุดคาเฟอีน</div>
+              <div style="font-size:18px;color:rgba(255,255,255,.4);">คำนวณจาก half-life เฉพาะตัว</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.06);border-radius:16px;padding:18px 24px;border:1px solid rgba(255,255,255,.08);">
+            <span style="font-size:36px;">📱</span>
+            <div>
+              <div style="font-size:26px;font-weight:800;color:#fff;">21:30 — วางหน้าจอ</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.06);border-radius:16px;padding:18px 24px;border:1px solid rgba(255,255,255,.08);">
+            <span style="font-size:36px;">🌙</span>
+            <div>
+              <div style="font-size:26px;font-weight:800;color:#fff;">22:30 — เวลานอน</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 7: THE 3AM MOMENT ⭐ EMOTIONAL CLIMAX         -->
+  <!-- (17:00 - 22:00) — 5 seconds                         -->
+  <!-- THE MOST IMPORTANT SCENE                             -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene fade-slow" id="s7" style="background:#060810;">
+    <!-- ambient warm glow behind Moonie -->
+    <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,224,178,.08) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:breathe 4s ease-in-out infinite;"></div>
+
+    <div style="text-align:center;position:relative;z-index:2;">
+      <!-- Moonie in pajamas with candle -->
+      <div style="animation:candleGlow 3s ease-in-out infinite;">
+        <svg viewBox="0 0 140 150" width="280" height="280" style="overflow:visible;">
+          <defs>
+            <radialGradient id="g7warm" cx="50%" cy="60%" r="60%">
+              <stop offset="0%" stop-color="rgba(255,224,178,.12)"/>
+              <stop offset="100%" stop-color="rgba(255,224,178,0)"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="70" cy="80" rx="60" ry="55" fill="url(#g7warm)"/>
+          <!-- body - warm sleepy version -->
+          <path d="M68,22 C98,22 116,42 116,68 C116,94 98,114 70,114 C52,114 38,104 38,88 C38,72 54,62 68,62 C82,62 92,70 92,78 C92,86 82,92 70,92" fill="#FFD966" stroke="rgba(255,255,255,0.15)" stroke-width="1" opacity=".9"/>
+          <!-- nightcap -->
+          <path d="M52,36 Q70,14 88,36 L80,46 L58,46 Z" fill="#7B1FA2" stroke="#CE93D8" stroke-width="1.2"/>
+          <circle cx="70" cy="34" r="5" fill="#FFD54F"/>
+          <!-- sleepy eyes (half closed - gentle) -->
+          <path d="M54,68 Q58,64 64,68" fill="none" stroke="#3D2B1F" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M72,68 Q76,64 82,68" fill="none" stroke="#3D2B1F" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- warm blush -->
+          <circle cx="48" cy="76" r="6" fill="#FFB3BA" opacity="0.4"/>
+          <circle cx="88" cy="76" r="6" fill="#FFB3BA" opacity="0.4"/>
+          <!-- gentle smile -->
+          <path d="M60,82 Q70,88 80,82" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+          <!-- arms -->
+          <ellipse cx="30" cy="78" rx="10" ry="6" fill="#FFD966" transform="rotate(-20 30 78)" opacity=".85"/>
+          <!-- candle in right hand -->
+          <g transform="translate(104,68)">
+            <rect x="-4" y="0" width="8" height="16" rx="2" fill="#FFE0B2"/>
+            <!-- flame -->
+            <ellipse cx="0" cy="-4" rx="5" ry="8" fill="#FFD54F" opacity=".9">
+              <animate attributeName="ry" values="7;9;6;8;7" dur="1.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".8;1;.7;.9;.8" dur="1.5s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="0" cy="-4" rx="3" ry="5" fill="#FFF8E1" opacity=".6">
+              <animate attributeName="ry" values="4;6;3;5;4" dur="1.5s" repeatCount="indefinite"/>
+            </ellipse>
+            <!-- candle glow -->
+            <circle cx="0" cy="-2" r="20" fill="rgba(255,224,178,.06)">
+              <animate attributeName="r" values="18;24;16;22;18" dur="2s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+          <!-- dim floating stars -->
+          <circle cx="20" cy="30" r="2" fill="#FFD54F" opacity=".2"><animate attributeName="opacity" values=".1;.3;.1" dur="3s" repeatCount="indefinite"/></circle>
+          <circle cx="120" cy="25" r="1.5" fill="#FFD54F" opacity=".15"><animate attributeName="opacity" values=".08;.25;.08" dur="3.5s" repeatCount="indefinite"/></circle>
+          <circle cx="15" cy="105" r="1.5" fill="#FFD54F" opacity=".12"><animate attributeName="opacity" values=".05;.2;.05" dur="4s" repeatCount="indefinite"/></circle>
+          <circle cx="125" cy="110" r="2" fill="#FFD54F" opacity=".1"><animate attributeName="opacity" values=".05;.18;.05" dur="2.8s" repeatCount="indefinite"/></circle>
+        </svg>
+      </div>
+
+      <!-- Speech bubble -->
+      <div style="margin-top:16px;display:inline-block;background:rgba(255,224,178,.08);border-radius:24px;padding:20px 40px;border:1px solid rgba(255,224,178,.1);">
+        <div style="font-size:38px;color:rgba(255,224,178,.75);font-weight:600;">
+          ไม่เป็นไรนะ เราอยู่ตรงนี้ 🕯️
+        </div>
+      </div>
+
+      <!-- Emotional text -->
+      <div style="margin-top:32px;">
+        <div style="font-size:34px;color:rgba(255,224,178,.35);">ตื่นกลางดึก?</div>
+        <div style="font-size:46px;font-weight:800;color:rgba(255,224,178,.8);margin-top:8px;" class="txt-shadow">
+          Moonie ไม่ปล่อยให้คุณอยู่คนเดียว
+        </div>
+      </div>
+    </div>
+
+    <!-- very dim stars in background -->
+    <div class="star" style="top:6%;left:8%;font-size:10px;opacity:.06;">✦</div>
+    <div class="star" style="top:12%;right:10%;font-size:8px;opacity:.04;animation-delay:.7s;">✦</div>
+    <div class="star" style="bottom:15%;left:5%;font-size:10px;opacity:.05;animation-delay:1.4s;">✦</div>
+    <div class="star" style="bottom:10%;right:6%;font-size:6px;opacity:.03;animation-delay:.3s;">✦</div>
+    <div class="star" style="top:40%;left:3%;font-size:8px;opacity:.04;animation-delay:2s;">✦</div>
+    <div class="star" style="top:35%;right:4%;font-size:7px;opacity:.03;animation-delay:1s;">✦</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 8: FEATURES + POSITIONING (22:00-26:00) — 4s  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene" id="s8" style="background:linear-gradient(170deg,#10061E,#1a0533);">
+    <div style="text-align:center;max-width:1600px;">
+      <!-- Positioning statement -->
+      <div style="font-size:80px;font-weight:900;color:#FFD966;line-height:1.3;margin-bottom:12px;" class="txt-glow-gold">
+        เพื่อนยามดึก
+      </div>
+      <div style="font-size:80px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:36px;" class="txt-shadow">
+        ไม่ใช่หมอ
+      </div>
+
+      <!-- Feature badges row -->
+      <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+        <div class="badge" style="background:rgba(206,147,216,.1);border-color:rgba(206,147,216,.25);">
+          🧠 หลักการ CBT-I ที่ได้รับการรับรอง
+        </div>
+        <div class="badge" style="background:rgba(102,187,106,.08);border-color:rgba(102,187,106,.2);">
+          🤖 AI Chat — แค่คุย ไม่ต้องกรอกฟอร์ม
+        </div>
+      </div>
+      <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+        <div class="badge" style="background:rgba(255,183,77,.08);border-color:rgba(255,183,77,.2);">
+          🎨 4 ธีมเปลี่ยนอัตโนมัติตามเวลา
+        </div>
+        <div class="badge" style="background:rgba(144,202,249,.08);border-color:rgba(144,202,249,.2);">
+          🕯️ Night Support ดูแลตลอดคืน
+        </div>
+      </div>
+
+      <!-- Sub-statement -->
+      <div style="margin-top:36px;font-size:32px;color:rgba(255,255,255,.4);">
+        อบอุ่น · ขี้เล่น · เข้าใจคุณ
+      </div>
+      <div style="margin-top:20px;font-size:40px;font-weight:800;color:#66BB6A;animation:pulse 2s ease-in-out infinite;">
+        เริ่มใช้ฟรี
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SCENE 9: CLOSING CTA (26:00-30:00) — 4 seconds     -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="scene fade-slow" id="s9" style="background:linear-gradient(170deg,#0D1B2A,#1B2838);">
+    <div style="text-align:center;">
+      <!-- Moonie waving -->
+      <div style="animation:float 3s ease-in-out infinite;margin-bottom:16px;">
+        <svg viewBox="0 0 120 120" width="180" height="180" style="overflow:visible;">
+          <defs><radialGradient id="g9c" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="rgba(255,217,102,0.5)"/><stop offset="100%" stop-color="rgba(255,217,102,0)"/></radialGradient></defs>
+          <ellipse cx="60" cy="58" rx="42" ry="38" fill="url(#g9c)"/>
+          <path d="M58,12 C88,12 106,32 106,58 C106,84 88,104 60,104 C42,104 28,94 28,78 C28,62 44,52 58,52 C72,52 82,60 82,68 C82,76 72,82 60,82" fill="#FFD966" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+          <circle cx="48" cy="58" r="5.5" fill="#2D1B00"/><circle cx="70" cy="58" r="5.5" fill="#2D1B00"/>
+          <circle cx="49.5" cy="56" r="2.2" fill="white"/><circle cx="71.5" cy="56" r="2.2" fill="white"/>
+          <circle cx="38" cy="66" r="5.5" fill="#FFB3BA" opacity="0.5"/><circle cx="80" cy="66" r="5.5" fill="#FFB3BA" opacity="0.5"/>
+          <path d="M50,70 Q59,78 70,70" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="22" cy="66" rx="8" ry="5" fill="#FFD966" transform="rotate(-20 22 66)"/>
+          <!-- waving arm -->
+          <ellipse cx="98" cy="52" rx="8" ry="5" fill="#FFD966" transform="rotate(35 98 52)">
+            <animateTransform attributeName="transform" type="rotate" values="25 98 52;45 98 52;25 98 52" dur="0.8s" repeatCount="indefinite" additive="replace"/>
+          </ellipse>
+        </svg>
+      </div>
+
+      <!-- Logo -->
+      <div style="font-size:110px;font-weight:900;font-family:'Playfair Display',serif;color:#fff;letter-spacing:4px;">
+        moo<span style="color:#CE93D8;text-decoration:underline;text-decoration-color:rgba(206,147,216,.5);text-underline-offset:10px;text-decoration-thickness:4px;">nap</span>
+      </div>
+      <div style="font-size:34px;color:rgba(255,255,255,.5);margin-top:10px;font-style:italic;font-family:'DM Sans',sans-serif;letter-spacing:2px;">
+        Rest Tonight. Shine Tomorrow.
+      </div>
+
+      <!-- CTA button -->
+      <div style="margin-top:40px;display:inline-block;background:linear-gradient(135deg,#7B1FA2,#CE93D8);border-radius:20px;padding:22px 70px;animation:pulse 2s ease-in-out infinite;box-shadow:0 8px 40px rgba(123,31,162,.3);">
+        <div style="font-size:42px;font-weight:900;color:#fff;">ดาวน์โหลดฟรี วันนี้</div>
+      </div>
+
+      <!-- Store badges -->
+      <div style="margin-top:28px;display:flex;gap:20px;justify-content:center;">
+        <div style="background:rgba(255,255,255,.1);border-radius:14px;padding:14px 32px;font-size:24px;color:rgba(255,255,255,.75);font-weight:700;border:1px solid rgba(255,255,255,.12);">▶️ Google Play</div>
+        <div style="background:rgba(255,255,255,.1);border-radius:14px;padding:14px 32px;font-size:24px;color:rgba(255,255,255,.75);font-weight:700;border:1px solid rgba(255,255,255,.12);"> App Store</div>
+      </div>
+
+      <div style="margin-top:20px;font-size:22px;color:rgba(255,255,255,.25);font-weight:500;">Scan QR Code ที่ Booth</div>
+    </div>
+
+    <!-- Background stars -->
+    <div class="star" style="top:8%;left:10%;font-size:18px;">✦</div>
+    <div class="star" style="top:6%;right:14%;font-size:12px;animation-delay:.5s;">✦</div>
+    <div class="star" style="bottom:18%;left:6%;font-size:16px;animation-delay:1s;">✦</div>
+    <div class="star" style="bottom:14%;right:8%;font-size:10px;animation-delay:1.5s;">✦</div>
+    <div class="star" style="top:25%;left:4%;font-size:8px;animation-delay:.8s;">✦</div>
+    <div class="star" style="top:20%;right:5%;font-size:14px;animation-delay:1.2s;">✦</div>
+    <div class="star" style="bottom:30%;left:15%;font-size:10px;animation-delay:.3s;">✦</div>
+    <div class="star" style="bottom:35%;right:12%;font-size:12px;animation-delay:1.8s;">✦</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- ANIMATION ENGINE                                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<script>
+const timeline = [
+  { id:"s1", start:0,     end:3000  },  // Hook
+  { id:"s2", start:3000,  end:5000  },  // Problem
+  { id:"s3", start:5000,  end:8000  },  // Brand reveal
+  { id:"s4", start:8000,  end:11000 },  // Meet your pet
+  { id:"s5", start:11000, end:14000 },  // AI Chat
+  { id:"s6", start:14000, end:17000 },  // Dynamic theme + planning
+  { id:"s7", start:17000, end:22000 },  // 3AM moment ⭐
+  { id:"s8", start:22000, end:26000 },  // Features + positioning
+  { id:"s9", start:26000, end:30000 },  // Closing CTA
+];
+
+const TOTAL = 30000;
+
+// Staggered animations within scenes
+const sceneAnimations = {
+  s1: [
+    { sel:'#s1-content > div:first-child', delay:0, cls:'fadeIn' },
+    { sel:'#s1-content > div:nth-child(2)', delay:300, cls:'fadeIn' },
+    { sel:'#s1-content > div:nth-child(3)', delay:800, cls:'fadeInUp' },
+  ],
+};
+
+function applyStaggeredAnimations(sceneId, elapsed, sceneStart) {
+  const anims = sceneAnimations[sceneId];
+  if (!anims) return;
+  const localTime = elapsed - sceneStart;
+  anims.forEach(a => {
+    const el = document.querySelector(a.sel);
+    if (!el) return;
+    if (localTime >= a.delay) {
+      el.style.opacity = '1';
+      el.style.animation = `${a.cls} 0.6s ease-out forwards`;
+    } else {
+      el.style.opacity = '0';
+      el.style.animation = 'none';
+    }
+  });
+}
+
+// Pre-stagger: hide elements that will animate in
+function initStagger() {
+  Object.values(sceneAnimations).forEach(anims => {
+    anims.forEach(a => {
+      const el = document.querySelector(a.sel);
+      if (el) el.style.opacity = '0';
+    });
+  });
+}
+
+function run() {
+  const start = performance.now();
+  initStagger();
+
+  function tick(now) {
+    const elapsed = (now - start) % TOTAL;
+
+    // Reset stagger on loop restart
+    if (elapsed < 100) initStagger();
+
+    timeline.forEach(t => {
+      const el = document.getElementById(t.id);
+      if (!el) return;
+      const active = elapsed >= t.start && elapsed < t.end;
+      if (active) {
+        el.classList.add('active');
+        applyStaggeredAnimations(t.id, elapsed, t.start);
+      } else {
+        el.classList.remove('active');
+      }
+    });
+
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+}
+
+run();
+</script>
+
+</body>
+</html>
