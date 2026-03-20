@@ -62,6 +62,9 @@
   @keyframes typeIn { from{width:0;opacity:0} to{width:100%;opacity:1} }
   @keyframes glowRing { 0%,100%{box-shadow:0 0 0 0 rgba(255,217,102,.4)} 50%{box-shadow:0 0 0 20px rgba(255,217,102,0)} }
   @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+  @keyframes floatZ1 { 0%,100%{transform:translateY(0);opacity:.7} 50%{transform:translateY(-6px);opacity:1} }
+  @keyframes floatZ2 { 0%,100%{transform:translateY(0);opacity:.6} 50%{transform:translateY(-8px);opacity:1} }
+  @keyframes floatZ3 { 0%,100%{transform:translateY(0);opacity:.5} 50%{transform:translateY(-10px);opacity:1} }
 
   /* ── STARS (reused) ── */
   .star { position:absolute; color:#FFD966; animation: twinkle 2.5s ease-in-out infinite; pointer-events:none; }
@@ -184,8 +187,29 @@
         </svg>
       </div>
       <!-- Logo -->
-      <div style="font-size:96px;font-weight:900;font-family:'Playfair Display',serif;color:#fff;letter-spacing:4px;">
-        moo<span style="color:#CE93D8;text-decoration:underline;text-decoration-color:rgba(206,147,216,.5);text-underline-offset:10px;text-decoration-thickness:4px;">nap</span>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <svg width="120" height="120" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+          <defs>
+            <radialGradient id="moonGrad1" cx="38%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#FFF4CC"/>
+              <stop offset="55%" stop-color="#F5C842"/>
+              <stop offset="100%" stop-color="#E29010"/>
+            </radialGradient>
+          </defs>
+          <circle cx="55" cy="55" r="46" fill="url(#moonGrad1)"/>
+          <circle cx="72" cy="47" r="37" fill="#1C1040"/>
+          <path d="M32 52 Q37 47 42 52" stroke="#8B5E1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M43 48 Q48 43 53 48" stroke="#8B5E1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M33 63 Q42 70 51 63" stroke="#8B5E1A" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <ellipse cx="28" cy="61" rx="6" ry="3.5" fill="#F4845F" opacity="0.45"/>
+          <ellipse cx="54" cy="57" rx="5.5" ry="3" fill="#F4845F" opacity="0.38"/>
+          <text x="66" y="44" font-size="11" font-family="Playfair Display,serif" fill="#F5C842" font-style="italic" style="animation:floatZ1 3s ease-in-out infinite">z</text>
+          <text x="76" y="33" font-size="14" font-family="Playfair Display,serif" fill="#F5C842" font-style="italic" style="animation:floatZ2 3s ease-in-out infinite .4s">z</text>
+          <text x="88" y="20" font-size="17" font-family="Playfair Display,serif" fill="#F5C842" font-style="italic" style="animation:floatZ3 3s ease-in-out infinite .8s">z</text>
+        </svg>
+        <div style="font-size:96px;font-weight:900;font-family:'Playfair Display',serif;color:#fff;letter-spacing:8px;">
+          moo<span style="color:#FFB74D;">nap</span>
+        </div>
       </div>
       <div style="font-size:32px;color:rgba(255,255,255,.55);margin-top:12px;font-style:italic;font-family:'DM Sans',sans-serif;letter-spacing:2px;">
         Rest Tonight. Shine Tomorrow.
@@ -547,8 +571,29 @@
       </div>
 
       <!-- Logo -->
-      <div style="font-size:110px;font-weight:900;font-family:'Playfair Display',serif;color:#fff;letter-spacing:4px;">
-        moo<span style="color:#CE93D8;text-decoration:underline;text-decoration-color:rgba(206,147,216,.5);text-underline-offset:10px;text-decoration-thickness:4px;">nap</span>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <svg width="130" height="130" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+          <defs>
+            <radialGradient id="moonGrad2" cx="38%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#FFF4CC"/>
+              <stop offset="55%" stop-color="#F5C842"/>
+              <stop offset="100%" stop-color="#E29010"/>
+            </radialGradient>
+          </defs>
+          <circle cx="55" cy="55" r="46" fill="url(#moonGrad2)"/>
+          <circle cx="72" cy="47" r="37" fill="#1C1040"/>
+          <path d="M32 52 Q37 47 42 52" stroke="#8B5E1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M43 48 Q48 43 53 48" stroke="#8B5E1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M33 63 Q42 70 51 63" stroke="#8B5E1A" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <ellipse cx="28" cy="61" rx="6" ry="3.5" fill="#F4845F" opacity="0.45"/>
+          <ellipse cx="54" cy="57" rx="5.5" ry="3" fill="#F4845F" opacity="0.38"/>
+          <text x="66" y="44" font-size="11" font-family="Playfair Display,serif" fill="#F5C842" font-style="italic" style="animation:floatZ1 3s ease-in-out infinite">z</text>
+          <text x="76" y="33" font-size="14" font-family="Playfair Display,serif" fill="#F5C842" font-style="italic" style="animation:floatZ2 3s ease-in-out infinite .4s">z</text>
+          <text x="88" y="20" font-size="17" font-family="Playfair Display,serif" fill="#F5C842" font-style="italic" style="animation:floatZ3 3s ease-in-out infinite .8s">z</text>
+        </svg>
+        <div style="font-size:110px;font-weight:900;font-family:'Playfair Display',serif;color:#fff;letter-spacing:8px;">
+          moo<span style="color:#FFB74D;">nap</span>
+        </div>
       </div>
       <div style="font-size:34px;color:rgba(255,255,255,.5);margin-top:10px;font-style:italic;font-family:'DM Sans',sans-serif;letter-spacing:2px;">
         Rest Tonight. Shine Tomorrow.
