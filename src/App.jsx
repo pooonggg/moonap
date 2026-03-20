@@ -283,7 +283,7 @@ function Card({t,children,style={},onClick,className=""}) {
 // ═══════════════════════════════════════
 // ONBOARDING (redesigned)
 // ═══════════════════════════════════════
-function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
+function Onboarding({t,onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
   const [step,setStep]=useState(0);
   const [userName,setUserName]=useState("");
   const [selPet,setSelPet]=useState(null);
@@ -292,7 +292,12 @@ function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
   const [answers,setAnswers]=useState({});
   const [talking,setTalking]=useState(false);
 
-  const skip=()=>{setPetChoice("moonie");setGlobalPetName("Moonie");setGlobalUserName("พลอย");onDone();};
+  const skip=()=>{
+    setPetChoice(selPet||"moonie");
+    setGlobalPetName(petName.trim()||(selPet&&PETS[selPet]?PETS[selPet].thName:"Moonie"));
+    setGlobalUserName(userName.trim()||"พลอย");
+    onDone();
+  };
 
   const questions=[
     {q:"ปกติเข้านอนประมาณกี่โมงคะ?",opts:["ก่อน 22:00","22:00 – 00:00","หลังเที่ยงคืน","ไม่แน่นอน"]},
@@ -301,7 +306,7 @@ function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
     {q:"ตื่นกลางดึกบ่อยไหมคะ?",opts:["ไม่ค่อย","บางครั้ง","ค่อนข้างบ่อย","ทุกคืน"]},
   ];
 
-  const bg=["linear-gradient(170deg,#0D1B2A,#1B2838)","linear-gradient(170deg,#0D1B2A,#1B2838)","linear-gradient(170deg,#1a237e,#283593)","linear-gradient(170deg,#4A148C,#0D1B2A)"];
+  const bg=t.bg;
 
   const handleAnswer=(a)=>{
     setAnswers(p=>({...p,[qIdx]:a}));
@@ -315,7 +320,7 @@ function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
 
   // Step 0: Enter name
   if(step===0) return (
-    <div style={{position:"absolute",inset:0,zIndex:200,background:bg[0],display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:28}}>
+    <div style={{position:"absolute",inset:0,zIndex:300,background:bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:28,transition:"background .55s ease"}}>
       <div className="fadeUp" style={{textAlign:"center",width:"100%"}}>
         <Logo color="#fff" hiColor="#FFD966" size={36} showMoon={true} moonBg="#0D1B2A"/>
         <div style={{fontSize:13,color:"rgba(255,255,255,.4)",marginTop:8,fontStyle:"italic"}}>Rest Tonight. Shine Tomorrow.</div>
@@ -329,7 +334,7 @@ function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
 
   // Step 1: Choose pet
   if(step===1) return (
-    <div style={{position:"absolute",inset:0,zIndex:200,background:bg[1],display:"flex",flexDirection:"column",alignItems:"center",padding:"36px 20px 20px",overflowY:"auto"}}>
+    <div style={{position:"absolute",inset:0,zIndex:300,background:bg,display:"flex",flexDirection:"column",alignItems:"center",padding:"36px 20px 20px",overflowY:"auto",transition:"background .55s ease"}}>
       <div className="fadeUp" style={{textAlign:"center",width:"100%"}}>
         <div style={{fontSize:18,fontWeight:700,color:"#fff",fontFamily:"'Noto Sans Thai',sans-serif"}}>เลือกเพื่อนคู่ใจของคุณ</div>
         <div style={{fontSize:12,color:"rgba(255,255,255,.45)",marginTop:6}}>เพื่อนที่จะเติบโตไปตามคุณภาพการนอน</div>
@@ -351,18 +356,20 @@ function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
           ))}
         </div>
         <div onClick={()=>selPet&&setStep(2)} style={{marginTop:22,background:selPet?"linear-gradient(135deg,#CE93D8,#B39DDB)":"rgba(255,255,255,.08)",borderRadius:16,padding:"13px 0",fontSize:15,fontWeight:700,color:selPet?"#fff":"rgba(255,255,255,.3)",cursor:selPet?"pointer":"default"}}>เลือกเพื่อนตัวนี้! →</div>
+        <div onClick={skip} style={{marginTop:10,fontSize:12,color:"rgba(255,255,255,.3)",cursor:"pointer",textAlign:"center"}}>⏩ ข้ามไปหน้าหลัก</div>
       </div>
     </div>
   );
 
   // Step 2: Name pet
   if(step===2) return (
-    <div style={{position:"absolute",inset:0,zIndex:200,background:bg[2],display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:28}}>
+    <div style={{position:"absolute",inset:0,zIndex:300,background:bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:28}}>
       <div className="fadeUp" style={{textAlign:"center",width:"100%"}}>
         <PetSVG pet={selPet} size={100} state="happy" age="baby"/>
         <div style={{fontSize:16,fontWeight:700,color:"#fff",marginTop:14,fontFamily:"'Noto Sans Thai',sans-serif"}}>ตั้งชื่อให้เพื่อนของคุณ</div>
         <input value={petName} onChange={e=>setPetName(e.target.value)} placeholder={`เช่น น้อง${PETS[selPet]?.thName||"มูนนี่"}...`} style={{width:"100%",padding:"14px 16px",borderRadius:16,border:"1px solid rgba(255,255,255,.2)",background:"rgba(255,255,255,.08)",color:"#fff",fontSize:16,outline:"none",marginTop:14,fontFamily:"'Noto Sans Thai',sans-serif",textAlign:"center"}}/>
         <div onClick={()=>petName.trim()&&setStep(3)} style={{marginTop:22,background:petName.trim()?"linear-gradient(135deg,#FFD966,#FF9F43)":"rgba(255,255,255,.08)",borderRadius:16,padding:"13px 0",fontSize:15,fontWeight:700,color:petName.trim()?"#2D1B00":"rgba(255,255,255,.3)",cursor:petName.trim()?"pointer":"default"}}>ไปต่อ →</div>
+        <div onClick={skip} style={{marginTop:10,fontSize:12,color:"rgba(255,255,255,.3)",cursor:"pointer",textAlign:"center"}}>⏩ ข้ามไปหน้าหลัก</div>
       </div>
     </div>
   );
@@ -370,7 +377,7 @@ function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
   // Step 3: Questionnaire with talking pet
   const cq = questions[qIdx];
   return (
-    <div style={{position:"absolute",inset:0,zIndex:200,background:bg[3],display:"flex",flexDirection:"column",alignItems:"center",padding:"30px 20px",overflowY:"auto"}}>
+    <div style={{position:"absolute",inset:0,zIndex:300,background:bg,display:"flex",flexDirection:"column",alignItems:"center",padding:"30px 20px",overflowY:"auto",transition:"background .55s ease"}}>
       {/* Progress */}
       <div style={{width:"100%",display:"flex",gap:6,marginBottom:20}}>
         {questions.map((_,i)=>(
@@ -395,6 +402,7 @@ function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
         ))}
       </div>
       <div style={{fontSize:11,color:"rgba(255,255,255,.25)",marginTop:16}}>คำถาม {qIdx+1}/{questions.length}</div>
+      <div onClick={skip} style={{marginTop:10,fontSize:12,color:"rgba(255,255,255,.25)",cursor:"pointer",textAlign:"center"}}>⏩ ข้ามคำถาม</div>
     </div>
   );
 }
@@ -738,11 +746,11 @@ export default function App() {
           {modal==="nightSupport"&&<NightSupportModal t={t} close={close} petId={petId} petNameStr={petNameStr}/>}
           {modal==="cbti"&&<CBTIModal t={t} close={close}/>}
           {modal==="premium"&&<PremiumModal t={t} close={close}/>}
-          {showOB&&<Onboarding onDone={()=>setShowOB(false)} setPetChoice={setPetId} setGlobalPetName={setPetNameStr} setGlobalUserName={setUserName}/>}
         </div>
         <div style={{display:"flex",background:t.nav,backdropFilter:"blur(18px)",borderTop:`1px solid ${t.cardB}`,paddingBottom:6,transition:"background .55s ease"}}>
           {tabs.map(tb=>(<div key={tb.id} onClick={()=>handleTab(tb.id)} style={{flex:1,padding:"7px 3px 3px",display:"flex",flexDirection:"column",alignItems:"center",gap:2,cursor:"pointer",position:"relative"}}>{tab===tb.id&&<div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:26,height:3,background:t.primary,borderRadius:3}}/>}<span style={{fontSize:19,opacity:tab===tb.id?1:.35,transition:"opacity .2s"}}>{tb.icon}</span><span style={{fontSize:9,color:tab===tb.id?t.primary:t.sub,fontWeight:tab===tb.id?700:400}}>{tb.label}</span></div>))}
         </div>
+        {showOB&&<Onboarding t={t} onDone={()=>setShowOB(false)} setPetChoice={setPetId} setGlobalPetName={setPetNameStr} setGlobalUserName={setUserName}/>}
       </div>
       <div style={{marginTop:8,fontSize:11,color:"rgba(255,255,255,.25)",textAlign:"center",fontFamily:"'Noto Sans Thai',sans-serif"}}>MOONAP V3 · เลือกเพื่อน 3 ตัว · สลับ Baby/Adult + สดใส/ป่วย/ออร่า · AI Chat พิมพ์ได้</div>
     </div>
