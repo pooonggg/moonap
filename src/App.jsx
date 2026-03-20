@@ -238,8 +238,31 @@ function PetSVG({pet="moonie",size=100,state="happy",age="adult",animated=true,t
 // ═══════════════════════════════════════
 // SHARED COMPONENTS
 // ═══════════════════════════════════════
-function Logo({color="#fff",hiColor="#CE93D8",size=17}) {
-  return <span style={{fontSize:size,fontWeight:700,fontFamily:"'Playfair Display',serif",color,letterSpacing:.5}}>moo<span style={{color:hiColor,textDecoration:"underline",textDecorationColor:hiColor+"66",textUnderlineOffset:3}}>nap</span></span>;
+function Logo({color="#fff",hiColor="#CE93D8",size=17,showMoon=false,moonBg="#0D1B2A"}) {
+  return (
+    <span style={{display:"inline-flex",alignItems:"center",gap:size*0.35}}>
+      {showMoon && (
+        <svg width={size*1.4} height={size*1.4} viewBox="0 0 110 110" style={{flexShrink:0,overflow:"visible"}}>
+          <defs>
+            <radialGradient id="lgm" cx="38%" cy="35%" r="65%">
+              <stop offset="0%" stopColor="#FFF4CC"/>
+              <stop offset="55%" stopColor="#F5C842"/>
+              <stop offset="100%" stopColor="#E29010"/>
+            </radialGradient>
+          </defs>
+          <circle cx="55" cy="55" r="46" fill="url(#lgm)"/>
+          <circle cx="72" cy="47" r="37" fill={moonBg}/>
+          <path d="M32 52 Q37 47 42 52" stroke="#8B5E1A" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+          <path d="M43 48 Q48 43 53 48" stroke="#8B5E1A" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+          <path d="M33 63 Q42 70 51 63" stroke="#8B5E1A" strokeWidth="2" fill="none" strokeLinecap="round"/>
+          <ellipse cx="28" cy="61" rx="6" ry="3.5" fill="#F4845F" opacity="0.45"/>
+        </svg>
+      )}
+      <span style={{fontSize:size,fontWeight:900,fontFamily:"'Playfair Display',serif",color,letterSpacing:Math.max(size*0.04,1)}}>
+        moo<span style={{color:hiColor}}>nap</span>
+      </span>
+    </span>
+  );
 }
 
 function Ring({v,max,col,icon,label,subCol="#888"}) {
@@ -294,7 +317,7 @@ function Onboarding({onDone,setPetChoice,setGlobalPetName,setGlobalUserName}) {
   if(step===0) return (
     <div style={{position:"absolute",inset:0,zIndex:200,background:bg[0],display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:28}}>
       <div className="fadeUp" style={{textAlign:"center",width:"100%"}}>
-        <Logo color="#fff" hiColor="#FFD966" size={36}/>
+        <Logo color="#fff" hiColor="#FFD966" size={36} showMoon={true} moonBg="#0D1B2A"/>
         <div style={{fontSize:13,color:"rgba(255,255,255,.4)",marginTop:8,fontStyle:"italic"}}>Rest Tonight. Shine Tomorrow.</div>
         <div style={{fontSize:18,fontWeight:700,color:"#fff",marginTop:32,fontFamily:"'Noto Sans Thai',sans-serif"}}>ชื่อของคุณคืออะไรคะ?</div>
         <input value={userName} onChange={e=>setUserName(e.target.value)} placeholder="พิมพ์ชื่อของคุณ..." style={{width:"100%",padding:"14px 16px",borderRadius:16,border:"1px solid rgba(255,255,255,.2)",background:"rgba(255,255,255,.08)",color:"#fff",fontSize:16,outline:"none",marginTop:16,fontFamily:"'Noto Sans Thai',sans-serif",textAlign:"center"}}/>
@@ -696,7 +719,7 @@ export default function App() {
           <div style={{fontSize:10,display:"flex",gap:5,alignItems:"center"}}><span>▪▪▪</span><span>WiFi</span><span>▮</span></div>
         </div>
         <div style={{padding:"4px 18px 6px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <Logo color={t.text} hiColor={t.primary} size={17}/>
+          <Logo color={t.text} hiColor={t.primary} size={17} showMoon={true} moonBg={t.nav}/>
           <div style={{display:"flex",gap:11,alignItems:"center"}}>
             <span style={{fontSize:11,color:t.sub}}>{t.icon} {now}</span>
             <div style={{position:"relative"}}><span style={{fontSize:17,cursor:"pointer"}}>🔔</span><div style={{position:"absolute",top:-2,right:-2,width:7,height:7,borderRadius:"50%",background:"#EF5350"}}/></div>

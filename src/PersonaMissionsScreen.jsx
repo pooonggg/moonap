@@ -65,8 +65,31 @@ function MoonieSVG({ size = 80, state = "happy" }) {
 // ═══════════════════════════════════════
 // SHARED UI COMPONENTS
 // ═══════════════════════════════════════
-function Logo({ color = "#fff", hiColor = "#CE93D8", size = 17 }) {
-  return <span style={{ fontSize: size, fontWeight: 700, fontFamily: "'Playfair Display',serif", color, letterSpacing: .5 }}>moo<span style={{ color: hiColor, textDecoration: "underline", textDecorationColor: hiColor + "66", textUnderlineOffset: 3 }}>nap</span></span>;
+function Logo({ color = "#fff", hiColor = "#CE93D8", size = 17, showMoon = false, moonBg = "#0D1B2A" }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: size * 0.35 }}>
+      {showMoon && (
+        <svg width={size * 1.4} height={size * 1.4} viewBox="0 0 110 110" style={{ flexShrink: 0, overflow: "visible" }}>
+          <defs>
+            <radialGradient id="lgm2" cx="38%" cy="35%" r="65%">
+              <stop offset="0%" stopColor="#FFF4CC" />
+              <stop offset="55%" stopColor="#F5C842" />
+              <stop offset="100%" stopColor="#E29010" />
+            </radialGradient>
+          </defs>
+          <circle cx="55" cy="55" r="46" fill="url(#lgm2)" />
+          <circle cx="72" cy="47" r="37" fill={moonBg} />
+          <path d="M32 52 Q37 47 42 52" stroke="#8B5E1A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M43 48 Q48 43 53 48" stroke="#8B5E1A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M33 63 Q42 70 51 63" stroke="#8B5E1A" strokeWidth="2" fill="none" strokeLinecap="round" />
+          <ellipse cx="28" cy="61" rx="6" ry="3.5" fill="#F4845F" opacity="0.45" />
+        </svg>
+      )}
+      <span style={{ fontSize: size, fontWeight: 900, fontFamily: "'Playfair Display',serif", color, letterSpacing: Math.max(size * 0.04, 1) }}>
+        moo<span style={{ color: hiColor }}>nap</span>
+      </span>
+    </span>
+  );
 }
 
 function Card({ children, style = {}, onClick }) {
@@ -433,7 +456,7 @@ function PhoneFrame({ persona, label }) {
         </div>
         {/* App header */}
         <div style={{ padding: "4px 18px 6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Logo color={T.text} hiColor={T.primary} size={17} />
+          <Logo color={T.text} hiColor={T.primary} size={17} showMoon={true} moonBg="#0D1B2A" />
           <div style={{ display: "flex", gap: 11, alignItems: "center" }}>
             <span style={{ fontSize: 11, color: T.sub }}>🌙 {now}</span>
             <span style={{ fontSize: 17 }}>🔔</span>
@@ -547,7 +570,7 @@ export default function PersonaMissionsScreen() {
 
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 20 }}>
-        <Logo color="#fff" hiColor="#CE93D8" size={28} />
+        <Logo color="#fff" hiColor="#CE93D8" size={28} showMoon={true} moonBg="#0D1B2A" />
         <div style={{ fontSize: 11, color: "rgba(255,255,255,.35)", marginTop: 4, fontStyle: "italic" }}>Rest Tonight. Shine Tomorrow.</div>
         <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", marginTop: 16 }}>
           🧑‍🎓 × 👨‍💼 Persona & Missions Comparison
