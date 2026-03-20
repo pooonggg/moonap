@@ -537,7 +537,7 @@ function ComparisonSection() {
 export default function PersonaMissionsScreen() {
   return (
     <div style={{
-      height: "100%", overflowY: "auto",
+      minHeight: "100vh",
       background: "linear-gradient(170deg,#0D1B2A,#1B2838)",
       display: "flex", flexDirection: "column", alignItems: "center",
       padding: "20px 12px 40px",
